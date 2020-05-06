@@ -1,0 +1,358 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{{ book.title }}
+{% endblock %}
+
+{% block navbutton %}
+{% if loged_in %}
+<a class="nav-link"
+ href="{{ url_for('profile') }}">Profile</a>
+{% else %}
+<a class="nav-link"
+ href="{{ url_for('access') }}">Access</a>
+{% endif %}
+{% endblock %}
+
+{% block body %}
+
+<style>
+	.container-fluid {
+		padding: 35px 15px 35px 15px;
+		background-color: #FAFAFA;
+	}
+
+	.group_book {
+		padding: 0 25px 0 25px;
+	}
+
+	.book-title,
+	h4 {
+		font-family: 'Raleway', sans-serif;
+	}
+
+	.book-author,
+	.book-year,
+	.book-isbn {
+		font-family: sans-serif;
+		font-size: 12px;
+		color: #999;
+		margin-left: 3px;
+		margin-bottom: 5px;
+	}
+
+	.avg-rating {
+		margin-bottom: 5px !important;
+		text-align: right;
+		display: block;
+		margin: auto;
+		font-family: sans-serif;
+		font-size: 13px;
+		color: #666
+	}
+
+	.no-reviews {
+		margin-top: 25px;
+		padding: 25px;
+		border: 1px solid #DDD;
+		font-family: 'Raleway', sans-serif;
+		border-radius: 7px;
+	}
+
+	.no-reviews .btn {
+		margin-top: 25px;
+		padding: 5px 25px 5px 25px;
+	}
+
+	#openModal {
+		color: white;
+		cursor: pointer;
+	}
+
+	.modal {
+		overflow: auto;
+		display: none;
+		position: fixed;
+		z-index: 1;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgb(0, 0, 0);
+		background-color: rgba(0, 0, 0, 0.4);
+	}
+
+	body.noscroll {
+		overflow: hidden;
+		overflow-x: hidden;
+		overflow-y: hidden;
+	}
+
+	.modal-content {
+		overflow: auto;
+		background-color: #fefefe;
+		margin: 75px auto;
+		padding: 20px;
+		border: 1px solid #888;
+		width: 80%;
+
+	}
+
+	.close {
+		color: #aaa;
+		font-size: 28px;
+		font-weight: bold;
+	}
+
+	.close:hover,
+	.close:focus {
+		color: black;
+		text-decoration: none;
+		cursor: pointer;
+	}
+
+	.modal-title {
+		font-family: 'Raleway', sans-serif;
+	}
+
+	label {
+		padding-bottom: 0px;
+		margin-bottom: 0px;
+		font-family: 'Raleway', sans-serif;
+		font-size: 9px;
+		letter-spacing: 1px;
+		font-weight: 900;
+		text-transform: uppercase;
+	}
+
+	.review-inputs {
+		width: 100%;
+		padding: 15px;
+		margin: 0 0 30px 0;
+		display: inline-block;
+		border: none;
+		background: #f1f1f1;
+		border-bottom: 2px solid black;
+		font-size: 15px;
+		font-family: 'Raleway', sans-serif;
+		height: 45px;
+	}
+
+	.review-inputs:focus {
+		background-color: #ddd;
+		outline: none;
+	}
+
+	textarea.review-inputs {
+		height: 75px;
+	}
+
+	.btn-publish {
+		margin: auto;
+		display: block;
+		padding: 5px 25px 5px 25px;
+		font-family: 'Raleway', sans-serif;
+	}
+
+	.review-list {
+		font-size: 11px;
+		list-style: none;
+		counter-reset: review;
+		padding-right: 0;
+		padding-left: 0;
+	}
+
+	.review-list li::before {
+		counter-increment: review;
+		content: counter(review) ". ";
+		vertical-align: top;
+		display: inline-block;
+		margin-top: -15px;
+		margin-left: -10px;
+		color: #222;
+		font-size: 11px;
+		font-family: 'Raleway', sans-serif;
+		font-weight: 900;
+
+	}
+
+	.review-item {
+		font-family: sans-serif;
+		border: 2px solid #EEE;
+		padding: 15px;
+		border-radius: 6px;
+		margin-bottom: 25px;
+		transition: all 0.35s ease-in;
+	}
+
+	.review-author {
+		font-weight: 900;
+		font-size: 12px;
+		margin-bottom: 3px;
+		color: #999;
+	}
+
+	.review-text {
+		font-weight: 300;
+		padding-left: 10px;
+	}
+
+	.review-rating {
+		padding-left: 12px;
+	}
+
+	.btn-space {
+		margin-bottom: 20px;
+		padding: 5px 25px 5px 25px;
+	}
+
+	.active {
+		background-color: #DDD !important;
+		transition: all 0.35s ease-in;
+	}
+</style>
+
+<body>
+	<div class="container-fluid">
+		{% if loged_in %}
+		<div class="group_book">
+			<h1 class="book-title">{{ book.title }}</h1>
+			<p class="book-author"><b>Author: </b>{{ book.author }}</p>
+			<p class="book-year"><b>Year: </b>{{ book.year }}</p>
+			<p class="book-isbn"><b>ID: </b>{{ book.isbn }}</p>
+			<p class="avg-rating">Rating: {{ ratings['books'][0]['average_rating'] }} / 5</p>
+			<p class="avg-rating">Nº of Ratings: {{ ratings['books'][0]['work_ratings_count'] }}</p>
+			<hr class="my-4">
+			<h4>Reviews ({{ reviews|count }})</h4>
+			{% if reviews|count == 0 %}
+			<div class="no-reviews text-center">
+				<h5>There are no reviews for this book.</h5>
+				<h6>Why don't you leave one?</h6>
+				<a class="btn btn-xl btn-success"
+				 id="openModal">Review</a>
+			</div>
+
+			{% else %}
+
+			{% if Reviewed %}
+
+			<h6 class="text-muted my-4">You've already left a review for this book. <a id="jumpto"
+				 href="#review-{{ user.id }}">See review</a></h6>
+
+			{% else %}
+			<button class="btn btn-xl btn-success btn-space"
+			 name="button"
+			 id="openModal">Review</button>
+
+			{% endif %}
+
+			<div class="reviews-group">
+				<ol class="review-list">
+					{% for review in reviews %}
+					<li class="review-item"
+					 id="review-{{ review.user_id }}">
+						<h6 class="review-author">@{% for author in authors %}{% if author.id == review.user_id %}{{ author.username }}{% endif %}{% endfor %}
+						</h6>
+						<h5 class="review-text">{{ review.text }}</h5>
+						<p class="review-rating">Rating: {{ review.rating }} / 5</p>
+					</li>
+					{% endfor %}
+				</ol>
+			</div>
+
+			{% endif %}
+			<div id="myModal"
+			 class="modal">
+				<div class="modal-content">
+					<div class="col-md-12">
+						<span class="close">&times;</span>
+						<h1 class="modal-title">Add Review</h1>
+						<hr class="my-4">
+						<form action="{{ url_for('review', isbn=book.isbn) }}"
+						 method="post">
+							<label for="rating">Rating (1 - 5)</label>
+							<input class="review-inputs"
+							 type="number"
+							 name="rating"
+							 placeholder="5"
+							 max="5"
+							 min="1"
+							 required>
+							<label for="review">Review</label>
+							<textarea class="review-inputs"
+							 name="review"
+							 rows="10"
+							 cols="15"
+							 placeholder="Write here your review."
+							 required></textarea>
+							<button class="btn btn-xl btn-success btn-publish">Publish</button>
+						</form>
+
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+		{% else %}
+		<div class="jumbotron">
+			<h1 class="display-5 bold">You're not logged in!</h1>
+			<hr class="my-4">
+			<p class="lead ">This is a premium feature only for registered users.</p>
+			<p>Sign up or login to access these features!</p>
+			<a class="btn btn-dark btn-xl"
+			 href="{{ url_for('access') }}"
+			 role="button">Let's go</a>
+		</div>
+		{% endif %}
+	</div>
+
+	<script type="text/javascript">
+		var review_link = document.getElementById("jumpto");
+		var id = review_link.getAttribute("href");
+		id = id.replace('#', '');
+		var review_item = document.getElementById(id);
+		console.log(review_item);
+
+		review_link.onclick = function() {
+			review_item.classList.add("active");
+			myFunction();
+		}
+		var myVar;
+
+		function myFunction() {
+			myVar = setInterval(clearBackground, 1500);
+		}
+
+		function clearBackground() {
+			review_item.classList.remove("active");
+		}
+	</script>
+
+	<script type="text/javascript">
+		var modal = document.getElementById("myModal");
+		var btn = document.getElementById("openModal");
+		var span = document.getElementsByClassName("close")[0];
+
+
+		btn.onclick = function() {
+			modal.style.display = "block";
+			$("body").addClass("noscroll");
+		}
+
+		span.onclick = function() {
+			modal.style.display = "none";
+			$("body").removeClass("noscroll");
+		}
+
+		window.onclick = function(event) {
+			if (event.target == modal) {
+				modal.style.display = "none";
+				$("body").removeClass("noscroll");
+			}
+		}
+	</script>
+
+</body>
+
+{% endblock %}

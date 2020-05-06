@@ -1,0 +1,179 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Books
+{% endblock %}
+
+{% block home %}active{% endblock %}
+{% block navbutton %}
+{% if loged_in %}
+<a class="nav-link"
+ href="{{ url_for('profile') }}">Profile</a>
+{% else %}
+<a class="nav-link"
+ href="{{ url_for('access') }}">Access</a>
+{% endif %}
+{% endblock %}
+
+{% block body %}
+
+<style>
+	.container-fluid {
+		padding: 35px 15px 35px 15px;
+		background-color: #FAFAFA;
+	}
+
+	.jumbotron {
+		padding-top: 25px;
+		font-family: 'Raleway', sans-serif;
+	}
+
+	.bold {
+		font-weight: 900;
+	}
+
+	.btn {
+		padding: 5px 25px 5px 25px;
+	}
+
+	.raleway {
+		font-family: 'Raleway', sans-serif;
+
+	}
+
+	.group1 {
+		margin: 10px 30px 10px 30px;
+	}
+
+	ol {
+		font-family: 'Raleway', sans-serif;
+		column-count: 2;
+		column-gap: 25px;
+	}
+
+	.card {
+		margin-right: 25px;
+	}
+
+	.card-title {
+		font-size: 25px;
+	}
+
+	.card-text {
+		font-size: 12px;
+		color: #999;
+	}
+
+	.card-link {
+		text-decoration: none;
+	}
+
+	.search-books,
+	.search-books:focus {
+		margin: 0 !important;
+		outline: none;
+		border: 0;
+		left: 0;
+		width: 80%;
+		height: 35px;
+		font-weight: 300;
+		font-size: 14px;
+		padding: 2px 7px 2px 7px;
+		background-color: transparent;
+	}
+
+	.group2 h5 {
+		margin-bottom: 25px;
+	}
+
+	.group2 form {
+		position: relative;
+		width: 50%;
+		margin: auto;
+		border: 2px solid #DDD;
+		border-radius: 5px;
+		background-color: white;
+		display: block;
+		overflow: hidden;
+		padding: 0 !important;
+	}
+
+	.group2 form button {
+		position: absolute;
+		background-color: #EEE;
+		border-radius: 0px;
+		height: 100%;
+		border: 0;
+		font-size: 18px !important;
+		width: 20%;
+		cursor: pointer;
+		float: right;
+		font-size: 14px !important;
+		font-weight: 300;
+	}
+</style>
+
+<body>
+	<div class="container-fluid">
+		{% if loged_in %}
+		<div class="group1">
+			<h1 class="text-center raleway">List of books</h1>
+			<div class="group2">
+				<form action="{{ url_for('search') }}"
+				 method="post">
+					<input type="text"
+					 placeholder="Search for books"
+					 name="search"
+					 class="search-books"
+					 required>
+					<button class="btn search-btn"
+					 name="button">Search</button>
+
+				</form>
+			</div>
+			<hr class="my-4">
+			<ol>
+				{% for book in books %}
+				<li>
+					<a class="card-link"
+					 href="{{ url_for('book', isbn=book.isbn) }}">
+						<div class="card mb-4">
+							<div class="text-dark card-header raleway">Author: <b>{{ book.author }}</b></div>
+							<div class="card-body text-dark">
+								<h5 class="card-title raleway">{{ book.title }} ({{ book.year }})</h5>
+								<p class="card-text raleway">ID: {{ book.isbn }}</p>
+							</div>
+						</div>
+					</a>
+				</li>
+				{% endfor %}
+			</ol>
+			<div class="group2">
+				<h5 class="raleway text-center">If you don't find the book you are searching for, try our search box!</h5>
+				<form action="#">
+					<input type="text"
+					 placeholder="Search for books"
+					 name="search"
+					 class="search-books">
+					<button class="search-btn"
+					 type="submit"
+					 name="button"><i class="material-icons">search</i></button>
+
+				</form>
+			</div>
+		</div>
+		{% else %}
+		<div class="jumbotron">
+			<h1 class="display-5 bold">You're not logged in!</h1>
+			<hr class="my-4">
+			<p class="lead ">This is a premium feature only for registered users.</p>
+			<p>Sign up or login to access these features!</p>
+			<a class="btn btn-dark btn-xl"
+			 href="{{ url_for('access') }}"
+			 role="button">Let's go</a>
+		</div>
+		{% endif %}
+	</div>
+</body>
+
+{% endblock %}

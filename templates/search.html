@@ -1,0 +1,169 @@
+{% extends "layout.html" %}
+{% block title %}
+Book Search
+{% endblock %}
+
+{% block navbutton %}
+<a class="nav-link"
+ href="{{ url_for('profile') }}">Profile</a>
+{% endblock %}
+
+{% block body %}
+
+<style>
+	.container-fluid {
+		padding: 30px 0px 30px 0px;
+		background-color: #FAFAFA;
+	}
+
+	.group1 {
+		margin: 10px 30px 30px 30px;
+	}
+
+	.title1 {
+		font-weight: 300;
+		margin-bottom: 25px;
+	}
+
+	.search-books,
+	.search-books:focus {
+		margin: 0 !important;
+		outline: none;
+		border: 0;
+		left: 0;
+		width: 80%;
+		height: 35px;
+		font-weight: 300;
+		font-size: 14px;
+		padding: 2px 7px 2px 7px;
+		background-color: transparent;
+	}
+
+
+	.group1 form {
+		position: relative;
+		width: 50%;
+		margin: auto;
+		border: 2px solid #DDD;
+		border-radius: 5px;
+		background-color: white;
+		display: block;
+		overflow: hidden;
+		padding: 0 !important;
+	}
+
+	.group1 form button {
+		position: absolute;
+		background-color: #EEE;
+		border-radius: 0px;
+		height: 100%;
+		border: 0;
+		font-size: 18px !important;
+		width: 20%;
+		cursor: pointer;
+		float: right;
+		font-size: 14px !important;
+		font-weight: 300;
+	}
+
+	.results_counter {
+		font-weight: 400;
+		color: #BBB;
+		margin: 5px 15px -20px 15px;
+	}
+
+	.searches {
+		margin-top: 0px;
+		padding-top: 15px;
+		border-top: 1px solid #EEE;
+		list-style: none;
+		font-family: 'Raleway', sans-serif;
+		column-count: 2;
+		column-gap: 25px;
+		padding-right: 0;
+		padding-left: 0;
+	}
+
+	.search-link {
+		color: black !important;
+		text-decoration: none !important;
+	}
+
+	.search-item {
+		padding-top: 10px;
+		break-inside: avoid-column;
+		transition: all 0.1s ease-in-out;
+	}
+
+	.search-item:hover {
+		background-color: #F5F5F5;
+		transition: all 0.1s ease-in-out;
+	}
+
+	.search-author {
+		font-size: 14px;
+	}
+
+	.search-info {
+		font-size: 12px;
+		color: #999;
+	}
+
+	.search-title,
+	.search-author,
+	.search-info {
+		margin-left: 25px;
+	}
+
+	.nobooks {
+		margin-top: 50px;
+		font-weight: 300;
+		font-size: 25px;
+	}
+</style>
+
+<body>
+	<div class="container-fluid">
+		<div class="group1">
+			<h2 class="title1">Searching...</h2>
+			<form action="{{ url_for('search') }}"
+			 method="post">
+				<input type="text"
+				 value="{{ m }}"
+				 name="search"
+				 class="search-books"
+				 required>
+				<button class="btn search-btn"
+				 name="button">Search</button>
+
+			</form>
+			<p class="results_counter">{{books|count}} results</p>
+		</div>
+		<div class="group2">
+			{% if books|count == 0 %}
+			<div class="container text-center">
+				<h3 class="nobooks">There are no books that match your search. Try again.</h3>
+			</div>
+			{% else %}
+			<ul class="searches">
+				{% for book in books %}
+				<a class="search-link"
+				 href="{{url_for('book', isbn=book.isbn)}}">
+					<li class="search-item">
+						<h3 class="search-title">{{ book.title }}</h3>
+						<p class="search-author">By: {{book.author }}</p>
+						<div class="row search-info">
+							<p class="col-sm">({{ book.year }})</p>
+							<p class="col-sm">ID: {{book.isbn}}</p>
+						</div>
+						<hr class="my4">
+					</li>
+				</a>
+
+				{% endfor %}
+			</ul>
+			{% endif %}
+		</div>
+	</div>
+</body>
+{% endblock %}

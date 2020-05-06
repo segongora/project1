@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Error 404
+{% endblock %}
+{% block navbutton %}
+<a class="nav-link"
+ href="{{ url_for('access') }}">Access</a>
+
+{% endblock %}
+
+{% block body %}
+
+<style>
+	.raleway {
+		font-family: 'Raleway', sans-serif;
+	}
+
+	.container {
+		padding: 35px 15px 35px 15px;
+	}
+
+	h2 {
+
+		margin-bottom: 25px;
+
+	}
+
+	h5 {
+		margin-top: 25px;
+		font-size: 14px;
+		font-weight: 900;
+	}
+
+	.btn {
+		margin-top: 25px;
+		padding: 5px 25px 5px 25px;
+	}
+</style>
+
+
+<body>
+	<div class="container text-center">
+		<h2 class="raleway">An error appears to have ocurred. Please try again</h2>
+		<hr>
+		<h5 class="raleway">{{ message }}</h5>
+		<a class="btn btn-xl btn-warning raleway"
+		 href="{{ url_for('access')}}">Try again</a>
+
+	</div>
+</body>
+
+{% endblock %}

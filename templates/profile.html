@@ -1,0 +1,370 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Profile | {{ user.name }}
+{% endblock %}
+
+{% block navbutton %}
+<a class="nav-link active"
+ href="{{ url_for('profile') }}">Profile</a>
+{% endblock %}
+
+{% block body %}
+<style>
+	.raleway {
+		font-family: 'Raleway', sans-serif;
+	}
+
+	.raleway-bold {
+		font-family: 'Raleway', sans-serif;
+		font-weight: 900;
+	}
+
+	.container-fluid {
+		padding: 35px;
+	}
+
+	.group {
+		background-color: #FAFAFA;
+		width: 90%;
+		margin: auto;
+		border: 2px solid #DDD;
+		border-radius: 10px;
+		padding: 15px;
+	}
+
+	@media screen and (max-width: 720px) {
+		.card {
+			width: 90% !important;
+			margin: auto;
+			margin-bottom: 25px !important;
+		}
+	}
+
+	@media screen and (min-width: 720px) {
+		.card {
+			width: 30% !important;
+			margin: 15px;
+		}
+	}
+
+	h2,
+	.card-title {
+		color: #222;
+	}
+
+	.card-text {
+		font-weight: 300;
+	}
+
+	.btn-info {
+		display: block;
+	}
+
+	.username-text {
+		color: #555;
+		font-size: 12px;
+	}
+
+	.logout {
+		float: right;
+		padding: 5px 25px 5px 25px;
+	}
+
+	#openModal,
+	#openEdit {
+		color: white;
+		cursor: pointer;
+	}
+
+	.modal {
+		overflow: auto;
+		display: none;
+		position: fixed;
+		z-index: 1;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgb(0, 0, 0);
+		background-color: rgba(0, 0, 0, 0.4);
+	}
+
+	body.noscroll {
+		overflow: hidden;
+		overflow-x: hidden;
+		overflow-y: hidden;
+	}
+
+	.modal-content {
+		overflow: auto;
+		background-color: #fefefe;
+		margin: 75px auto;
+		padding: 20px;
+		border: 1px solid #888;
+		width: 80%;
+
+	}
+
+	.close,
+	.close-edit {
+		color: #aaa;
+		font-size: 28px;
+		font-weight: bold;
+	}
+
+	.close:hover,
+	.close:focus,
+	.close-edit:hover,
+	.close-edit:focus {
+		color: black;
+		text-decoration: none;
+		cursor: pointer;
+	}
+
+	.modal-title {
+		font-family: 'Raleway', sans-serif;
+	}
+
+	.review-item {
+		padding: 10px 15px 20px 5px;
+	}
+
+	.review-item p {
+		font-weight: 300;
+		margin-bottom: 0;
+		padding-bottom: 0;
+	}
+
+	.review-item h5 {
+		font-weight: 900;
+		font-family: 'Raleway', sans-serif;
+		font-size: 19px;
+		margin-bottom: 5px;
+	}
+
+	.review-container {
+		border: 1px solid #DDD;
+		border-radius: 6px;
+		margin-bottom: 20px;
+		transition: all .15s ease-in-out;
+	}
+
+	.review-container:hover {
+		background-color: #EFEFEF;
+		transition: all .15s ease-in-out;
+	}
+
+	.rating {
+		font-size: 12px;
+		color: #AAA;
+	}
+
+	ul {
+		list-style: none;
+		padding: 0;
+	}
+
+	ul a {
+		text-decoration: none !important;
+	}
+
+	form {
+		padding: 15px;
+	}
+
+	label {
+		padding-bottom: 0px;
+		margin-bottom: 0px;
+		font-family: 'Raleway', sans-serif;
+		font-size: 9px;
+		font-weight: 900;
+		text-transform: uppercase;
+	}
+
+	input[type=text],
+	input[type=password] {
+		width: 100%;
+		padding: 15px;
+		margin: 0 0 30px 0;
+		display: inline-block;
+		border: none;
+		background: #f1f1f1;
+		border-bottom: 2px solid black;
+		font-size: 15px;
+		font-family: 'Raleway', sans-serif;
+		height: 45px;
+	}
+
+	input[type=text]:focus,
+	input[type=password]:focus {
+		background-color: #ddd;
+		outline: none;
+	}
+</style>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="group">
+			<div class="text-center">
+				<h2 class="raleway">{{ user.name }}</h2>
+				<p class="raleway username-text">@{{ user.username }}</p>
+				<hr>
+			</div>
+
+			<div class="row">
+
+				<!-- Boook -->
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title raleway-bold">Books</h5>
+						<p class="card-text mb-2 text-muted">Search for books from our large database!
+							You can also leave a review or see it's details.</p>
+						<a class="btn btn-info text-center raleway"
+						 href="{{ url_for('index') }}">Find a book</a>
+					</div>
+				</div>
+
+				<!-- Reviews -->
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title raleway-bold">Reviews</h5>
+						<p class="card-text mb-2 text-muted">Find every review you've ever left!
+							See specific details about your review as also the book info.</p>
+						<a class="btn btn-info text-center raleway"
+						 id="openModal">My reviews</a>
+					</div>
+				</div>
+				<div id="myModal"
+				 class="modal">
+					<div class="modal-content">
+						<div class="col-md-12">
+							<span class="close">&times;</span>
+							<h1 class="modal-title">Reviews ({{ reviews|count }})</h1>
+							<hr class="my-4">
+							<ul>
+								{% for review in reviews %}
+								{% for book in reviewed_books %}
+								{% if book.id == review.book_id %}
+								<a href="{{url_for('book', isbn=book.isbn)}}">
+									<div class="container review-container">
+										<li class="review-item">
+											<h5>{{ book.title }}</h5>
+											<p>{{ review.text }}</p>
+											<p class="rating">Rating: {{review.rating}}/5</p>
+										</li>
+									</div>
+								</a>
+								{% endif %}
+								{% endfor %}
+								{% endfor %}
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				<!-- Profile -->
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title raleway-bold">Edit info</h5>
+						<p class="card-text mb-2 text-muted">Find every review you've ever left!
+							See specific details about your review as also the book info.</p>
+						<a class="btn btn-info text-center raleway"
+						 id="openEdit">Edit info</a>
+					</div>
+				</div>
+
+				<div id="editModal"
+				 class="modal">
+					<div class="modal-content">
+						<div class="col-md-12">
+							<span class="close">&times;</span>
+							<h1 class="modal-title">Edit profile</h1>
+							<hr class="my-4">
+							<form action="{{ url_for('edit_profile') }}"
+							 method="post">
+								<label for="name">Name</label>
+								<input type="text"
+								 value="{{user.name}}"
+								 name="name"
+								 required>
+								<label for="username">Username</label>
+								<input type="text"
+								 value="{{user.username}}"
+								 name="username"
+								 required>
+
+								<label for="password">Password</label>
+								<input type="password"
+								 placeholder="Password"
+								 name="password"
+								 required>
+								<button class="btn btn-success">Save</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<hr>
+		<a class="btn btn-danger left logout"
+		 name="logout"
+		 href="{{ url_for('logout') }}">Log Out</a>
+	</div>
+</div>
+
+<script type="text/javascript">
+	var modal = document.getElementById("myModal");
+	var btn = document.getElementById("openModal");
+	var span = document.getElementsByClassName("close")[0];
+
+
+	btn.onclick = function() {
+		modal.style.display = "block";
+		$("body").addClass("noscroll");
+	}
+
+	span.onclick = function() {
+		modal.style.display = "none";
+		$("body").removeClass("noscroll");
+	}
+
+	window.onclick = function(event) {
+		if (event.target == modal) {
+			modal.style.display = "none";
+			$("body").removeClass("noscroll");
+		}
+
+	}
+</script>
+<script type="text/javascript">
+	var editModal = document.getElementById("editModal");
+	var editBtn = document.getElementById("openEdit");
+	var span = document.getElementsByClassName("close")[1];
+	var modal = document.getElementById("myModal");
+
+	editBtn.onclick = function() {
+		editModal.style.display = "block";
+		$("body").addClass("noscroll");
+	}
+
+	span.onclick = function() {
+		editModal.style.display = "none";
+		$("body").removeClass("noscroll");
+	}
+
+	window.onclick = function(event) {
+		if (event.target == modal) {
+			modal.style.display = "none";
+			$("body").removeClass("noscroll");
+		}
+
+		if (event.target == editModal) {
+			editModal.style.display = "none";
+			$("body").removeClass("noscroll");
+		}
+	}
+</script>
+{% endblock %}

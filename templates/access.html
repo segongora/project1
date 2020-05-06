@@ -1,0 +1,180 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Access
+{% endblock %}
+
+{% block access %}active{% endblock %}
+
+{% block navbutton %}
+<a class="nav-link active"
+ href="{{ url_for('access') }}">Access</a>
+
+{% endblock %}
+
+{% block body %}
+
+<style>
+	.first {
+		background-color: #f5f5f5;
+		padding: 25px 45px 25px 45px;
+
+	}
+
+	form {
+		padding: 15px;
+	}
+
+	h1,
+	p {
+		font-family: 'Raleway', sans-serif;
+	}
+
+	label {
+		padding-bottom: 0px;
+		margin-bottom: 0px;
+		font-family: 'Raleway', sans-serif;
+		font-size: 9px;
+		font-weight: 900;
+		text-transform: uppercase;
+	}
+
+	input[type=text],
+	input[type=password] {
+		width: 100%;
+		padding: 15px;
+		margin: 0 0 30px 0;
+		display: inline-block;
+		border: none;
+		background: #f1f1f1;
+		border-bottom: 2px solid black;
+		font-size: 15px;
+		font-weight: 300;
+		height: 45px;
+	}
+
+	input[type=text]:focus,
+	input[type=password]:focus {
+		background-color: #ddd;
+		outline: none;
+	}
+
+	.btn-success {
+		font-family: 'Raleway', sans-serif;
+		background-color: #4CAF50;
+		transition: all 0.2s ease-in;
+		color: white !important;
+		width: 50%;
+		border: none;
+		cursor: pointer;
+	}
+
+	.btn-success:hover {
+		filter: brightness(110%);
+		transition: all 0.2s ease-in;
+
+	}
+
+	.group {
+		background-color: white;
+		border: 2px solid #DDD;
+		border-radius: 7px;
+		overflow: hidden;
+	}
+
+	.nav-tabs,
+	.nav-tabs .nav-item .nav-link {
+		border-radius: 0;
+		border: 0 solid transparent;
+		border-bottom: 2px solid #DDD;
+	}
+
+	.nav-tabs .nav-item .active {
+		background-color: #DDD !important;
+		cursor: default;
+		color: #AAA !important;
+	}
+</style>
+
+
+<div class="first col-md-12">
+	<div class="group">
+		<ul class="nav nav-tabs nav-fill"
+		 id="myTab"
+		 role="tablist">
+			<li class="nav-item">
+				<a class="nav-link active"
+				 id="signup-tab"
+				 data-toggle="tab"
+				 href="#signup"
+				 role="tab"
+				 aria-controls="signup"
+				 aria-selected="true">Sign Up</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link"
+				 id="login-tab"
+				 data-toggle="tab"
+				 href="#login"
+				 role="tab"
+				 aria-controls="login"
+				 aria-selected="false">Login</a>
+			</li>
+
+		</ul>
+		<div class="tab-content"
+		 id="myTabContent">
+			<div class="tab-pane fade show active"
+			 id="signup"
+			 role="tabpanel"
+			 aria-labelledby="signup-tab">
+				<form action="{{ url_for('signup' )}}"
+				 method="post">
+					<h1>Sign Up</h1>
+					<hr>
+					<label for="name">Name</label>
+					<input type="text"
+					 placeholder="John Appleseed"
+					 name="name"
+					 required>
+					<label for="username">Username</label>
+					<input type="text"
+					 placeholder="John_appleseed"
+					 name="username"
+					 required>
+
+					<label for="password">Password</label>
+					<input type="password"
+					 placeholder="Password"
+					 name="password"
+					 required>
+					<button class="btn btn-success">Sign Up</button>
+				</form>
+			</div>
+			<div class="tab-pane fade"
+			 id="login"
+			 role="tabpanel"
+			 aria-labelledby="login-tab">
+				<form action="{{ url_for('login' )}}"
+				 method="post">
+					<h1>Login</h1>
+					<hr>
+					<label for="username">Username</label>
+					<input type="text"
+					 placeholder="John_appleseed"
+					 name="username"
+					 required>
+
+					<label for="password">Password</label>
+					<input type="password"
+					 placeholder="Password"
+					 name="password"
+					 required>
+					<button class="btn btn-success">Login</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
