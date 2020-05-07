@@ -149,15 +149,15 @@ Books
 				{% endfor %}
 			</ol>
 			<div class="group2">
-				<h5 class="raleway text-center">If you don't find the book you are searching for, try our search box!</h5>
-				<form action="#">
+				<form action="{{ url_for('search') }}"
+				 method="post">
 					<input type="text"
 					 placeholder="Search for books"
 					 name="search"
-					 class="search-books">
-					<button class="search-btn"
-					 type="submit"
-					 name="button"><i class="material-icons">search</i></button>
+					 class="search-books"
+					 required>
+					<button class="btn search-btn"
+					 name="button">Search</button>
 
 				</form>
 			</div>

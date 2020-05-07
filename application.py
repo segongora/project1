@@ -101,8 +101,6 @@ def access():
 	else:
 		return redirect(url_for('profile'))
 
-# segongora -
-# segongora2 - sergio
 @app.route("/login", methods=["POST"])
 def login():
 	if request.method == "POST":
